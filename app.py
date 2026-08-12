@@ -10,12 +10,12 @@ from sklearn.ensemble import RandomForestRegressor
 
 
 # =========================================================
-# PAGE CONFIGURATION
+# PAGE SETTINGS
 # =========================================================
 
 st.set_page_config(
     page_title="Retail Sales Analytics",
-    page_icon="Retail",
+    page_icon="🛍️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -31,9 +31,9 @@ st.markdown("""
 .stApp {
     background: linear-gradient(
         135deg,
-        #0f172a 0%,
-        #111827 50%,
-        #172554 100%
+        #0f172a,
+        #111827,
+        #172554
     );
     color: white;
 }
@@ -51,7 +51,7 @@ header {
 }
 
 
-/* Main title */
+/* TITLE */
 
 .main-title {
     font-size: 40px;
@@ -69,18 +69,13 @@ header {
 }
 
 
-/* =========================================================
-   KPI CARDS
-   ========================================================= */
+/* KPI CARDS */
 
 .metric-card {
     border-radius: 18px;
-    padding: 22px 12px;
+    padding: 22px 10px;
     text-align: center;
-    min-height: 125px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    min-height: 120px;
     box-shadow: 0px 8px 25px rgba(0,0,0,0.30);
     color: white;
 }
@@ -118,23 +113,19 @@ header {
 }
 
 .metric-title {
-    color: #ffffff;
+    color: white;
     font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .metric-value {
     color: white;
     font-size: 27px;
     font-weight: 800;
-    white-space: nowrap;
 }
 
 
-/* =========================================================
-   SECTION HEADINGS
-   ========================================================= */
+/* SECTION TITLE */
 
 .section-title {
     color: white;
@@ -145,9 +136,7 @@ header {
 }
 
 
-/* =========================================================
-   PREDICTION BOX
-   ========================================================= */
+/* PREDICTION */
 
 .prediction-box {
     background: linear-gradient(
@@ -155,7 +144,7 @@ header {
         #4f46e5,
         #7c3aed
     );
-    padding: 28px;
+    padding: 30px;
     border-radius: 20px;
     text-align: center;
     margin-top: 20px;
@@ -174,22 +163,14 @@ header {
 }
 
 
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
+/* SIDEBAR */
 
 section[data-testid="stSidebar"] {
     background: #020617;
 }
 
-section[data-testid="stSidebar"] h2 {
-    color: white;
-}
 
-
-/* =========================================================
-   BUTTON
-   ========================================================= */
+/* BUTTON */
 
 .stButton > button {
     width: 100%;
@@ -205,54 +186,6 @@ section[data-testid="stSidebar"] h2 {
     padding: 12px;
 }
 
-.stButton > button:hover {
-    background: linear-gradient(
-        135deg,
-        #1d4ed8,
-        #6d28d9
-    );
-    color: white;
-}
-
-
-/* =========================================================
-   DATAFRAME
-   ========================================================= */
-
-[data-testid="stDataFrame"] {
-    border-radius: 12px;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media only screen and (max-width: 768px) {
-
-    .main-title {
-        font-size: 30px;
-    }
-
-    .subtitle {
-        font-size: 14px;
-    }
-
-    .metric-card {
-        min-height: 110px;
-        padding: 15px 5px;
-    }
-
-    .metric-value {
-        font-size: 21px;
-    }
-
-    .metric-title {
-        font-size: 12px;
-    }
-
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -264,7 +197,9 @@ section[data-testid="stSidebar"] h2 {
 @st.cache_data
 def load_data():
 
-    data = pd.read_csv("retail_sales_dataset.csv")
+    data = pd.read_csv(
+        "retail_sales_dataset.csv"
+    )
 
     data["Date"] = pd.to_datetime(
         data["Date"],
@@ -272,6 +207,9 @@ def load_data():
     )
 
     return data
+
+
+df = load_data()
 
 
 # =========================================================
@@ -292,6 +230,17 @@ def train_model(data):
 
     y = data["Total Amount"]
 
+    categorical_columns = [
+        "Gender",
+        "Product Category"
+    ]
+
+    numeric_columns = [
+        "Age",
+        "Quantity",
+        "Price per Unit"
+    ]
+
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -299,19 +248,12 @@ def train_model(data):
                 OneHotEncoder(
                     handle_unknown="ignore"
                 ),
-                [
-                    "Gender",
-                    "Product Category"
-                ]
+                categorical_columns
             ),
             (
-                "numerical",
+                "numeric",
                 "passthrough",
-                [
-                    "Age",
-                    "Quantity",
-                    "Price per Unit"
-                ]
+                numeric_columns
             )
         ]
     )
@@ -322,7 +264,7 @@ def train_model(data):
     )
 
     pipeline = Pipeline(
-        steps=[
+        [
             (
                 "preprocessor",
                 preprocessor
@@ -361,30 +303,8 @@ def load_model(data):
 
         model = train_model(data)
 
-        try:
-
-            with open(
-                "model.pkl",
-                "wb"
-            ) as file:
-
-                pickle.dump(
-                    model,
-                    file,
-                    protocol=4
-                )
-
-        except Exception:
-            pass
-
         return model
 
-
-# =========================================================
-# LOAD DATA + MODEL
-# =========================================================
-
-df = load_data()
 
 model = load_model(df)
 
@@ -394,13 +314,16 @@ model = load_model(df)
 # =========================================================
 
 st.markdown(
-    '<div class="main-title">Retail Sales Analytics</div>',
+    '<div class="main-title">'
+    'Retail Sales Analytics'
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
     '<div class="subtitle">'
-    'Interactive Retail Sales Dashboard and Machine Learning Prediction'
+    'Interactive Retail Sales Dashboard and '
+    'Machine Learning Prediction'
     '</div>',
     unsafe_allow_html=True
 )
@@ -414,9 +337,9 @@ st.sidebar.markdown(
     "## Retail Analytics"
 )
 
-st.sidebar.markdown(
+st.sidebar.write(
     "Explore sales performance, customer insights "
-    "and predict total sales using Machine Learning."
+    "and machine learning predictions."
 )
 
 st.sidebar.markdown("---")
@@ -437,9 +360,9 @@ page = st.sidebar.radio(
 
 if page == "Dashboard":
 
-    # =====================================================
-    # KPI CALCULATIONS
-    # =====================================================
+    # -----------------------------------------------------
+    # KPI VALUES
+    # -----------------------------------------------------
 
     total_transactions = df[
         "Transaction ID"
@@ -458,55 +381,512 @@ if page == "Dashboard":
     ].mean()
 
 
-    # =====================================================
+    # -----------------------------------------------------
     # KPI CARDS
-    # =====================================================
+    # -----------------------------------------------------
 
     col1, col2, col3, col4 = st.columns(4)
 
+
     with col1:
 
-        st.markdown(
-            f"""
-            <div class="metric-card card-1">
-                <div class="metric-title">
-                    Transactions
-                </div>
+        html = (
+            '<div class="metric-card card-1">'
+            '<div class="metric-title">'
+            'Transactions'
+            '</div>'
+            '<div class="metric-value">'
+            + str(total_transactions)
+            + '</div>'
+            '</div>'
+        )
 
-                <div class="metric-value">
-                    {total_transactions:,}
-                </div>
-            </div>
-            """,
+        st.markdown(
+            html,
             unsafe_allow_html=True
         )
 
 
     with col2:
 
-        st.markdown(
-            f"""
-            <div class="metric-card card-2">
-                <div class="metric-title">
-                    Total Revenue
-                </div>
+        revenue_text = (
+            "₹"
+            + format(
+                total_revenue,
+                ",.0f"
+            )
+        )
 
-                <div class="metric-value">
-                    ₹{total_revenue:,.0f}
-                </div>
-            </div>
-            """,
+        html = (
+            '<div class="metric-card card-2">'
+            '<div class="metric-title">'
+            'Total Revenue'
+            '</div>'
+            '<div class="metric-value">'
+            + revenue_text
+            + '</div>'
+            '</div>'
+        )
+
+        st.markdown(
+            html,
             unsafe_allow_html=True
         )
 
 
     with col3:
 
-        st.markdown(
-            f"
-            <div class="metric-card card-3">
-                <div class="metric-title">
-                    Customers
-                </div>
+        html = (
+            '<div class="metric-card card-3">'
+            '<div class="metric-title">'
+            'Customers'
+            '</div>'
+            '<div class="metric-value">'
+            + str(total_customers)
+            + '</div>'
+            '</div>'
+        )
 
-               
+        st.markdown(
+            html,
+            unsafe_allow_html=True
+        )
+
+
+    with col4:
+
+        average_text = (
+            "₹"
+            + format(
+                average_sale,
+                ",.0f"
+            )
+        )
+
+        html = (
+            '<div class="metric-card card-4">'
+            '<div class="metric-title">'
+            'Average Sale'
+            '</div>'
+            '<div class="metric-value">'
+            + average_text
+            + '</div>'
+            '</div>'
+        )
+
+        st.markdown(
+            html,
+            unsafe_allow_html=True
+        )
+
+
+    # =====================================================
+    # SALES PERFORMANCE
+    # =====================================================
+
+    st.markdown(
+        '<div class="section-title">'
+        'Sales Performance'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    category_sales = (
+        df.groupby(
+            "Product Category"
+        )["Total Amount"]
+        .sum()
+        .reset_index()
+        .sort_values(
+            "Total Amount",
+            ascending=False
+        )
+    )
+
+
+    col1, col2 = st.columns(2)
+
+
+    # BAR CHART
+
+    with col1:
+
+        fig_bar = px.bar(
+            category_sales,
+            x="Product Category",
+            y="Total Amount",
+            text="Total Amount",
+            title="Sales by Product Category",
+            template="plotly_dark"
+        )
+
+        fig_bar.update_traces(
+            texttemplate="₹%{text:,.0f}",
+            textposition="outside"
+        )
+
+        fig_bar.update_layout(
+            height=450,
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_bar,
+            use_container_width=True
+        )
+
+
+    # PIE CHART
+
+    with col2:
+
+        fig_pie = px.pie(
+            category_sales,
+            names="Product Category",
+            values="Total Amount",
+            hole=0.55,
+            title="Sales Distribution",
+            template="plotly_dark"
+        )
+
+        fig_pie.update_layout(
+            height=450,
+            paper_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_pie,
+            use_container_width=True
+        )
+
+
+    # =====================================================
+    # SALES TREND
+    # =====================================================
+
+    st.markdown(
+        '<div class="section-title">'
+        'Sales Trend'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    daily_sales = (
+        df.groupby(
+            "Date"
+        )["Total Amount"]
+        .sum()
+        .reset_index()
+        .sort_values("Date")
+    )
+
+
+    fig_line = px.line(
+        daily_sales,
+        x="Date",
+        y="Total Amount",
+        title="Retail Sales Over Time",
+        markers=True,
+        template="plotly_dark"
+    )
+
+    fig_line.update_layout(
+        height=450,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)"
+    )
+
+    st.plotly_chart(
+        fig_line,
+        use_container_width=True
+    )
+
+
+    # =====================================================
+    # HISTOGRAM AND BOX PLOT
+    # =====================================================
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        fig_hist = px.histogram(
+            df,
+            x="Total Amount",
+            nbins=30,
+            title="Distribution of Total Amount",
+            template="plotly_dark"
+        )
+
+        fig_hist.update_layout(
+            height=400,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_hist,
+            use_container_width=True
+        )
+
+
+    with col2:
+
+        fig_box = px.box(
+            df,
+            y="Total Amount",
+            title="Sales Amount Box Plot",
+            template="plotly_dark"
+        )
+
+        fig_box.update_layout(
+            height=400,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+
+        st.plotly_chart(
+            fig_box,
+            use_container_width=True
+        )
+
+
+    # =====================================================
+    # PRODUCT ANALYSIS
+    # =====================================================
+
+    st.markdown(
+        '<div class="section-title">'
+        'Product Analysis'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    fig_scatter = px.scatter(
+        df,
+        x="Quantity",
+        y="Price per Unit",
+        size="Total Amount",
+        color="Product Category",
+        hover_data=[
+            "Transaction ID",
+            "Customer ID",
+            "Gender"
+        ],
+        title="Quantity vs Price per Unit",
+        template="plotly_dark"
+    )
+
+
+    fig_scatter.update_layout(
+        height=500,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)"
+    )
+
+
+    st.plotly_chart(
+        fig_scatter,
+        use_container_width=True
+    )
+
+
+# =========================================================
+# SALES PREDICTION
+# =========================================================
+
+elif page == "Sales Prediction":
+
+    st.markdown(
+        '<div class="section-title">'
+        'Sales Amount Prediction'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    st.write(
+        "Enter customer and product information "
+        "to predict the expected Total Amount."
+    )
+
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        gender = st.selectbox(
+            "Gender",
+            [
+                "Male",
+                "Female"
+            ]
+        )
+
+        age = st.slider(
+            "Age",
+            18,
+            70,
+            30
+        )
+
+        category = st.selectbox(
+            "Product Category",
+            sorted(
+                df[
+                    "Product Category"
+                ].unique()
+            )
+        )
+
+
+    with col2:
+
+        quantity = st.slider(
+            "Quantity",
+            1,
+            10,
+            2
+        )
+
+        price = st.number_input(
+            "Price per Unit",
+            min_value=1.0,
+            max_value=5000.0,
+            value=100.0,
+            step=10.0
+        )
+
+
+    st.markdown("---")
+
+
+    if st.button(
+        "Predict Total Amount",
+        use_container_width=True
+    ):
+
+        input_data = pd.DataFrame(
+            {
+                "Gender": [gender],
+                "Age": [age],
+                "Product Category": [category],
+                "Quantity": [quantity],
+                "Price per Unit": [price]
+            }
+        )
+
+
+        prediction = model.predict(
+            input_data
+        )[0]
+
+
+        prediction_text = (
+            "₹"
+            + format(
+                prediction,
+                ",.2f"
+            )
+        )
+
+
+        html = (
+            '<div class="prediction-box">'
+            '<div class="prediction-label">'
+            'Predicted Total Amount'
+            '</div>'
+            '<div class="prediction-value">'
+            + prediction_text
+            + '</div>'
+            '</div>'
+        )
+
+
+        st.markdown(
+            html,
+            unsafe_allow_html=True
+        )
+
+        st.success(
+            "Prediction completed successfully."
+        )
+
+
+# =========================================================
+# DATASET
+# =========================================================
+
+elif page == "Dataset":
+
+    st.markdown(
+        '<div class="section-title">'
+        'Retail Sales Dataset'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    col1, col2, col3 = st.columns(3)
+
+
+    with col1:
+
+        st.metric(
+            "Rows",
+            df.shape[0]
+        )
+
+
+    with col2:
+
+        st.metric(
+            "Columns",
+            df.shape[1]
+        )
+
+
+    with col3:
+
+        st.metric(
+            "Missing Values",
+            int(
+                df.isnull()
+                .sum()
+                .sum()
+            )
+        )
+
+
+    st.markdown("---")
+
+
+    st.dataframe(
+        df,
+        use_container_width=True,
+        height=600
+    )
+
+
+# =========================================================
+# FOOTER
+# =========================================================
+
+st.markdown("---")
+
+st.markdown(
+    '<div style="text-align:center;'
+    'color:#94a3b8;'
+    'padding:20px;">'
+    '<b>Retail Sales Analytics</b><br>'
+    'Built with Python, Pandas, Plotly, '
+    'Scikit-learn and Streamlit'
+    '</div>',
+    unsafe_allow_html=True
+    )
