@@ -66,14 +66,28 @@ st.markdown("""
 
     /* Cards */
     .metric-card {
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 18px;
-        padding: 22px;
-        text-align: center;
-        box-shadow: 0px 8px 25px rgba(0,0,0,0.25);
-    }
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0px 8px 25px rgba(0,0,0,0.25);
+    color: white;
+}
 
+.card-1 {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.card-2 {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.card-3 {
+    background: linear-gradient(135deg, #9333ea, #7e22ce);
+}
+
+.card-4 {
+    background: linear-gradient(135deg, #ea580c, #c2410c);
+}
     .metric-title {
         color: #94a3b8;
         font-size: 15px;
@@ -269,7 +283,7 @@ if page == "📊 Dashboard":
     with col1:
         st.markdown(
             f"""
-            <div class="metric-card">
+            <div class="metric-card card-1">
                 <div class="metric-title">🧾 Transactions</div>
                 <div class="metric-value">{total_transactions:,}</div>
             </div>
@@ -280,7 +294,7 @@ if page == "📊 Dashboard":
     with col2:
         st.markdown(
             f"""
-            <div class="metric-card">
+            <div class="metric-card-2">
                 <div class="metric-title">💰 Total Revenue</div>
                 <div class="metric-value">₹{total_revenue:,.0f}</div>
             </div>
@@ -291,7 +305,7 @@ if page == "📊 Dashboard":
     with col3:
         st.markdown(
             f"""
-            <div class="metric-card">
+            <div class="metric-card-3">
                 <div class="metric-title">👥 Customers</div>
                 <div class="metric-value">{total_customers:,}</div>
             </div>
@@ -302,7 +316,7 @@ if page == "📊 Dashboard":
     with col4:
         st.markdown(
             f"""
-            <div class="metric-card">
+            <div class="metric-card-4">
                 <div class="metric-title">📈 Avg. Sale</div>
                 <div class="metric-value">₹{average_sale:,.0f}</div>
             </div>
