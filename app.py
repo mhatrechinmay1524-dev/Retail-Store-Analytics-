@@ -142,14 +142,67 @@ def load_data():
 
     return data
 
-
 @st.cache_resource
 def load_model():
 
-    with open("model.pkl", "rb") as file:
-        model = pickle.load(file)
+    try:
+        # Try loading the saved model
+        with open("model.pkl", "rb") as file:
+            model = pickle.load(file)
 
-    return model
+        return model
+
+    except Exception:
+
+        # If model.pkl is corrupted, train a new model
+        from sklearn.compose import ColumnTransformer
+        from sklearn.preprocessing import OneHotEncoder
+        from sklearn.pipeline import Pipeline
+        from sklearn.ensemble import RandomForestRegressor
+
+        X = df[
+            [
+                "Gender",
+                "Age",
+                "Product Category",
+                "Quantity",
+                "Price per Unit"
+            ]
+        ]
+
+        y = df["Total Amount"]
+
+        preprocessor = ColumnTransformer([
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore"),
+                ["Gender", "Product Category"]
+            ),
+            (
+                "num",
+                "passthrough",
+                ["Age", "Quantity", "Price per Unit"]
+            )
+        ])
+
+        model = RandomForestRegressor(
+            n_estimators=200,
+            random_state=42
+        )
+
+        pipeline = Pipeline([
+            ("preprocessor", preprocessor),
+            ("model", model)
+        ])
+
+        pipeline.fit(X, y)
+
+        # Save a fresh model
+        with open("model.pkl", "wb") as file:
+            pickle.dump(pipeline, file, protocol=4)
+
+        return pipeline
+
 
 
 df = load_data()
