@@ -503,7 +503,7 @@ if page == "Dashboard":
     with col3:
 
         st.markdown(
-            f"""
+            f"
             <div class="metric-card card-3">
                 <div class="metric-title">
                     Customers
